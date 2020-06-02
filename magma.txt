@@ -1,0 +1,27 @@
+varg@fb.com
+
+
+Hi Zongze,
+ The links for ramping up on Magma from our in-house expert:
+
+--
+For a beginner tutorial, I'd recommend the magmathon: https://github.com/phanrahan/magmathon
+
+Start by following the setup instructions: https://github.com/phanrahan/magmathon#setup-and-installation
+Then walk through the tutorial notebooks here: https://github.com/phanrahan/magmathon/tree/master/notebooks/tutorial/coreir
+
+Once they are through that, they can then walk through the register file tutorial: https://github.com/leonardt/magma_register_file_tutorial
+
+After that, they should be good to go to start writing some real magma code and tests.
+
+Feel free to put them in contact with me/Raj to help them with any questions or getting setup on their local machines.
+
+
+Regards
+Varghese
+
+
+
+
+https://github.com/phanrahan/magma
+这里的东西说不好是多少年前的了，但是这里的docs很有用

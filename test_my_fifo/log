@@ -1,0 +1,42 @@
+5/27
+首先声明，他的case里没有把magma design跑出仿真然后生成波形的实验，所有东西都是我自己写着玩的。以后有用没用不知道，自己写着玩。
+
+有两个case，一个是测APB，一个是测register
+
+我自己的fifo，情形接近他的register，都是能综合成rtl的，但是他的case里没有出波形
+
+我的fifo/他的register 和他的APB model的最大不同点在于，APB是没有方向的。我的fifo是m.In(m.Reset)
+
+关于APB：
+	1）他声明APB的方法是：
+	result = type("_APB", (Product, ), fields)
+	对这段代码现有的理解是，用一种Product类型的基类，把fields这个字典的值放进去，声明一个叫“_APB”的新数据类型。这个Product类型是来源于hwtypes的。
+	这个_APB类型保留有Product的一些方法，比如调
+		for key, value in _APB.field_dict.items():
+	就可以看到_APB里的所有的内容了
+	
+	2）他用一个函数default_APB_instance(_APB)来给_APB赋初值，返回的应该还是Product为基类的那个东西
+
+
+
+
+关于我的FIFO/他的Register：
+	我的fifo的interface：
+		interface = m.Product.from_fields("HandshakeData", {fields})
+	他的register的interface：
+		return m.Product.from_fields("APBMaster", fields)
+	可以看出来这两个的声明interface的用法是一样的，都是用m.Product来声明，不知道和上面的hwtypes里的Product有什么不一样。不过，都有field_dict.items()这么个方法。
+	但是本质区别是，m.Product.from_fields出来的东西是Tuple类型数据，看着更直观，可以直接打出来。
+	
+
+5/27:
+我本来打算用什么方法，每执行一步，取所有信号的值，输到waveform里。所以我想弄get_value
+
+我在/usr/local/lib/python3.7/dist-packages/fault/wrapper.py找到了expect的原码，可以调用/usr/local/lib/python3.7/dist-packages/fault/tester/staged_tester.py下的expect函数。但是我写了一个类似的函数叫get_value去取值，就不行。虽然在staged_tester.py里有get_value函数。
+那个select_path是个很关键的东西，可以找到每个信号的地址。
+
+今天这个实验算失败了，因为没有办法拿到信号的值。这样也好，以后就不纠结了。
+
+明天，我只能一步一步的用expect去猜每一个cycle的每个信号的值
+猜对了，手动修改我的信号数组里的那些值，让waveform生成波形。
+错了就错了呗！

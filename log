@@ -1,0 +1,37 @@
+#此log是问题汇总，可能会有点乱
+1) 安装时的问题：
+	我用python3.7,一开始会报没有gpmy和apt_pkg问题，
+	用pip能装上，但是pip是对应python3.6的，所以会在/usr/lib/python3/dist-packages生成gmpy2.cpython-36m-x86_64-linux-gnu.so 和 apt_pkg.cpython-36m-x86_64-linux-gnu.so
+	解决：cp apt_pkg.cpython-36m-x86_64-linux-gnu.so apt_pkg.cpython-37m-x86_64-linux-gnu.so
+	解决方法link： https://www.jianshu.com/p/c66f659550f9
+
+	安装完的路径在：
+		/usr/local/lib/python3.7/dist-packages
+		这里有manga和mantle
+
+2)bitvector 要用这个办法：
+from hwtypes import BitVector
+
+3)
+m.compile("build/FullAdder", FullAdder, output="coreir") 
+#这个的意思是只生成IR，不生成v文件
+#什么都不写，默认生成IR和v
+#m.compile("build/FullAdder", FullAdder, output="coreir-verilog")
+#这个就是什么都生成了
+
+4)
+full_adder.py
+from magma.waveform import waveform
+#危险！这里改动了/usr/local/lib/python3.7/dist-packages/magma/waveform.py
+#这个返回值是一种matplotlib.pyplot类型的数据，不知道怎么打出来
+result = waveform(test_vectors_raw, ["a", "b", "cin", "sum", "cout"])
+print (result)
+
+5) 
+sequential例子，用@m.circuit.sequential(async_reset=True) 来声明时序逻辑设计，自动会有clk 和 reset。但是暂时不知道怎么用
+
+6)mantle
+RAM.py在：/usr/local/lib/python3.7/dist-packages/mantle/common
+
+
+7) 信号 @=和<= 都是连接，好像没有区别
