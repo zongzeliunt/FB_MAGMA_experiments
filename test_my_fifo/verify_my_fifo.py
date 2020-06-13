@@ -82,8 +82,12 @@ tester = fault.Tester(FIFO, clock=FIFO.ARES_design.CLK)
 
 #从这里开始，每两个step代表一个cycle
 #一定得是两个step代表一个cycle！切记！
+#6/12:必须在reset的时候把所有外面的信号都设成false！
 #cycle 0
 tester.circuit.ARES_design.RESET = 1
+tester.circuit.ARES_design.Write = False 
+tester.circuit.ARES_design.Read = False 
+tester.circuit.ARES_design.WData = 0 
 tester.step(2)
 
 #cycle 1
@@ -233,7 +237,7 @@ Actions:
 
 
 
-tester.compile_and_run(target="verilator", magma_output="coreir-verilog",magma_opts={"verilator_debug": True},flags=["--trace"])
+#tester.compile_and_run(target="verilator", magma_output="coreir-verilog",magma_opts={"verilator_debug": True},flags=["--trace"])
 #tester.compile_and_run(target="verilator", magma_output="coreir-verilog")
 
 #以下方式，可以生成SV文件
