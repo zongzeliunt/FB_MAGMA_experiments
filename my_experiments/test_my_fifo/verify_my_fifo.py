@@ -237,8 +237,8 @@ Actions:
 
 
 
-#tester.compile_and_run(target="verilator", magma_output="coreir-verilog",magma_opts={"verilator_debug": True},flags=["--trace"])
+tester.compile_and_run(target="verilator", magma_output="coreir-verilog",magma_opts={"verilator_debug": True},flags=["--trace"])
 #tester.compile_and_run(target="verilator", magma_output="coreir-verilog")
 
 #以下方式，可以生成SV文件
-tester.compile_and_run("system-verilog", simulator="vivado", flags=["-Wno-fatal", "--trace"], directory="build")
+#tester.compile_and_run("system-verilog", simulator="vcs", flags=["-Wno-fatal", "--trace"], directory="build")
