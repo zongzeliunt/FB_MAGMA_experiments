@@ -66,11 +66,16 @@ def FIFO_test (tester, FIFO_depth = 4):
 
 depth = 16 
 mode = 3
+
 try:
 	mode = int (sys.argv[1])
+except:
+	print ("Run default mode 3.")
+
+try:
 	depth = int(sys.argv[2])
 except:
-	print ("Use default depth = 16, run mode 3.")
+	print ("Use default depth = 16.")
 
 FIFO_depth = depth
 FIFO = FIFO_declare (FIFO_depth)
