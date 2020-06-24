@@ -17,6 +17,12 @@ def FIFO_declare (FIFO_depth = 4):
 
 def tester_reset (tester):
 	#VCS sim, the initial clk status is low. So all even step are clk negedge, odd step are clk posedge
+	#Internal signal change at clk posedge, so I need to do my operation on clk negedge to make sure every time I check interface signal on negedge, the status are stable. 
+	#This is way I cannot use this first tester step
+	#=========================== 
+	#Do not open this
+	#tester.step(1)
+	#=========================== 
 	tester.circuit.clocks.resetn = 0
 	tester.circuit.dataInValid = 0
 	tester.circuit.dataIn = 0

@@ -1,0 +1,73 @@
+This case, fault sim and vcs sim result are different.
+***************************************
+Problem:
+	VCS initial clk is low, fault sim initial clk status unknown.
+	What I can find is, internal signal status change at posedge. 
+	So, if I write data at posedge, the out data valid signal could not stable at the expect time.
+	In reset stage, I run 4 tester steps. So in real data write function, the initial clk status is low. 
+
+***************************************
+Two behaviors:
+	1) If write at posedge, use this code in DataPipe_test:
+		#{{{
+		tester.step(1)
+		loop_count = 2	
+		for i in range (0, depth * loop_count):
+			tester.circuit.Din = base_write_data + i
+			tester.circuit.VldIn = 1
+				
+			if i <= depth:
+				tester.circuit.VldOut.expect(0)
+			else:
+				tester.circuit.VldOut.expect(1)
+				tester.circuit.Dout.expect(base_write_data + i - depth - 1)
+		#}}}
+	   This means, wait the initial low clk, write at posedge, after {depth + 1} count of cycles (I use i <= depth), expect {base_write_data + i - depth - 1} data.
+	   This strategy can pass VCS sim, but fail fault sim.
+	
+	2) Write at posedge, use this code in DataPipe_test:
+		#{{{
+		tester.step(1)
+		loop_count = 2	
+		for i in range (0, depth * loop_count):
+			tester.circuit.Din = base_write_data + i
+			tester.circuit.VldIn = 1
+				
+			if i < depth:
+				tester.circuit.VldOut.expect(0)
+			else:
+				tester.circuit.VldOut.expect(1)
+				tester.circuit.Dout.expect(base_write_data + i - depth)
+
+			tester.step(2)
+		#}}}
+	   This strategy can pass fault sim, but fail vcs sim.	
+
+***************************************
+My guess:
+	Internal signals are changing at clk posedge. If I write data at clk posedge, there could have a slight latency made vcs cannot detect the signal change edge at clk posedge. 
+	Actually, vcs detected signal value at clk posedge are belongs to the last clk cycle. 
+
+***************************************
+Current solution:
+	One unified solution is write data at negedge. Code is like this:
+		#{{{
+		loop_count = 2	
+		for i in range (0, depth * loop_count):
+			tester.circuit.Din = base_write_data + i
+			tester.circuit.VldIn = 1
+				
+			if i < depth:
+				tester.circuit.VldOut.expect(0)
+			else:
+				tester.circuit.VldOut.expect(1)
+				tester.circuit.Dout.expect(base_write_data + i - depth)
+		#}}}
+	Do not use the initial tester step. This will write data at negedge. So, at posedge, the signal status will be stable. This solution can pass both fault sim and vcs sim.
+
+
+***************************************
+Nodes:
+	I am not sure this is correct. I only write this tb for passing simulations. In real RTL design or my RTL level tb, I don't "expect" anything. My logic only respond when related signals have change. 
+	As I can see, FIFO case and Pipeline case also have such problems.
+		
