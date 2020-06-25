@@ -9,9 +9,7 @@ from hwtypes import Enum, Product, Bit, BitVector
 import pprint
 pp = pprint.PrettyPrinter()
 
-from turing_old.src.rtl.DesignLib.Pipeline import Pipeline
-#from turing_old.src.rtl.DesignLib.Fifo import Fifo
-#from turing_old.src.rtl.DesignLib.Register import Register
+from turing.src.rtl.DesignLib.Pipeline import Pipeline
 
 def Pipeline_declare (depth = 4):
 	PIPELINE = Pipeline.generate(m.Bits[32], depth)
@@ -76,15 +74,25 @@ if mode == 2:
 	tester = fault.Tester(Pipeline, clock=Pipeline.clocks.clk)
 	tester_reset(tester)
 	Pipeline_test (tester, depth)
-	tester.compile_and_run(target="verilator", magma_output="coreir-verilog",magma_opts={"verilator_debug": True},flags=["--trace"])
+	tester.compile_and_run(
+		target="verilator", 
+		directory="build",
+		magma_output="coreir-verilog",
+		magma_opts={"verilator_debug": True},
+		flags=["--trace"]
+	)
 
 if mode == 3:
 	#THREE: This is vcs test, if not match expect, fault will not report error, but vcs will report
 	tester = fault.Tester(Pipeline, clock=Pipeline.clocks.clk)
 	tester_reset(tester)
 	Pipeline_test (tester, depth)
-	tester.compile_and_run("system-verilog", simulator="vcs", flags=["-Wno-fatal", "--trace"], directory="build")
-
+	tester.compile_and_run(
+		"system-verilog", 
+		simulator="vcs", 
+		flags=["-Wno-fatal", "--trace"], 
+		directory="build"
+	)
 
 
 

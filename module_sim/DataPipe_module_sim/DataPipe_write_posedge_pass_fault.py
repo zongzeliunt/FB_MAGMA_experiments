@@ -19,7 +19,7 @@ from hwtypes import Enum, Product, Bit, BitVector
 import pprint
 pp = pprint.PrettyPrinter()
 
-from turing_old.src.rtl.DesignLib.DataPipe import DataPipe
+from turing.src.rtl.DesignLib.DataPipe import DataPipe
 
 def tester_reset (tester):
 	#VCS sim, the initial clk status is low. So all even steps are clk negedge, odd steps are clk posedge

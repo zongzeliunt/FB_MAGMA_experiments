@@ -21,7 +21,7 @@ def tester_reset (tester):
 	#This is way I cannot use this first tester step
 	#=========================== 
 	#Do not open this
-	#tester.step(1)
+	tester.step(1)
 	#=========================== 
 	tester.circuit.clocks.resetn = 0
 	tester.circuit.dataInValid = 0
@@ -37,8 +37,9 @@ def FIFO_test (tester, FIFO_depth = 4):
 #{{{
 	base_write_data = 10
 	#Internal signal change at clk posedge, so I need to do my operation on clk negedge to make sure every time I check interface signal on negedge, the status are stable. 
+	#tester.step(1)
 	for i in range (0, FIFO_depth):
-		if i == 0:
+		if i <= 1:
 			tester.circuit.dataOutValid.expect(0)
 		else:
 			tester.circuit.dataOutValid.expect(1)
@@ -46,25 +47,30 @@ def FIFO_test (tester, FIFO_depth = 4):
 		tester.circuit.dataInValid = True
 		tester.circuit.dataIn = base_write_data + i 
 		tester.step(2)
+	
+	tester.circuit.dataInReady.expect(1)
+	tester.circuit.dataInValid = False
+	tester.circuit.dataIn = 0 
+	tester.step(2)
 		
 	for i in range (0, FIFO_depth):
-		if i == 0:
+		tester.circuit.dataOutValid.expect(1)
+		tester.circuit.dataOutReady = True
+		if i <= 1:
 			tester.circuit.dataInReady.expect(0)
-			tester.circuit.dataInValid = False
-			tester.circuit.dataIn = 0 
+			tester.circuit.dataOut.expect(base_write_data)
 		else:
 			tester.circuit.dataInReady.expect(1)
+			tester.circuit.dataOut.expect(base_write_data + i - 1)
 
-		tester.circuit.dataOutValid.expect(1)
-		tester.circuit.dataOut.expect(base_write_data + i)
-		tester.circuit.dataOutReady = True
 		tester.step(2)
 
 	
-	tester.circuit.dataOutValid.expect(0)
+	tester.circuit.dataOutValid.expect(1)
 	tester.circuit.dataInReady.expect(1)
 	tester.circuit.dataOutReady = False 
 	tester.step(2)
+	tester.circuit.dataOutValid.expect(0)
 	
 	#print (tester)
 #}}}
@@ -108,14 +114,13 @@ if mode == 3:
 	tester = fault.Tester(FIFO, clock=FIFO.clocks.clk)
 	tester_reset(tester)
 	FIFO_test (tester, FIFO_depth)
-	FIFO_test (tester, FIFO_depth)
+	#FIFO_test (tester, FIFO_depth)
 	tester.compile_and_run(
 		"system-verilog", 
 		simulator="vcs", 
 		flags=["-Wno-fatal", "--trace"], 
 		directory="build"
 	)
-
 
 
 

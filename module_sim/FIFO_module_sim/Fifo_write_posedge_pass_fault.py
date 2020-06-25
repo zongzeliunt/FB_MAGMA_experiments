@@ -37,6 +37,7 @@ def FIFO_test (tester, FIFO_depth = 4):
 #{{{
 	base_write_data = 10
 	#Internal signal change at clk posedge, so I need to do my operation on clk negedge to make sure every time I check interface signal on negedge, the status are stable. 
+	tester.step(1)
 	for i in range (0, FIFO_depth):
 		if i == 0:
 			tester.circuit.dataOutValid.expect(0)
@@ -71,12 +72,12 @@ def FIFO_test (tester, FIFO_depth = 4):
 
 
 depth = 16 
-mode = 3
+mode = 2 
 
 try:
 	mode = int (sys.argv[1])
 except:
-	print ("Run default mode 3.")
+	print ("Run default mode 2.")
 
 try:
 	depth = int(sys.argv[2])
@@ -108,7 +109,7 @@ if mode == 3:
 	tester = fault.Tester(FIFO, clock=FIFO.clocks.clk)
 	tester_reset(tester)
 	FIFO_test (tester, FIFO_depth)
-	FIFO_test (tester, FIFO_depth)
+	#FIFO_test (tester, FIFO_depth)
 	tester.compile_and_run(
 		"system-verilog", 
 		simulator="vcs", 
